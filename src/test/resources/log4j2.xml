@@ -1,13 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="info">
+<Configuration packages="net.technolords.library.log4j2">
     <Appenders>
-        <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%date{DEFAULT} [%level] [%thread] [%class{36}] %message%n"/>
-        </Console>
+        <MyCustomAppender name="ElasticSearchAppender">
+            <ElasticSearch indexName="log4j2ES" protocol="http" server="localhost" port="9200"/>
+            <RollingFile name="rollingLogFile" fileName="target/log4j2/rollingLogFile/log2ES-%d{MM-dd-yyyy-HH-mm}.json" ignoreExceptions="true">
+                <PatternLayout>
+                    <Pattern>{"debug_level":"%p","debug_timestamp":"%d{YYYY-MM-DD HH-MM-SS}","debug_thread":"%t","debug_file":"%F", "debug_line":"%L","debug_message":"%m"}%na</Pattern>
+                </PatternLayout>
+            </RollingFile>
+        </MyCustomAppender>
     </Appenders>
     <Loggers>
         <Root level="info">
-            <AppenderRef ref="console"/>
+            <AppenderRef ref="ElasticSearchAppender"/>
         </Root>
     </Loggers>
 </Configuration>
