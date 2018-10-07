@@ -1,6 +1,9 @@
 package net.technolords.library.log4j2.model;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ModelManager {
 
@@ -21,6 +24,36 @@ public class ModelManager {
      */
 
     public Map<String, String> convertLayoutPatternToMap(String layoutPattern) {
-        return null;    // TODO
+        String[] logEvents = layoutPattern.split("\\s+");
+        HashMap<String, String> hmap = new HashMap<>();
+
+
+        for (String event : logEvents) {
+            String conversionString, key = null;
+            event = event.replaceAll("\\{.*\\}", "");
+
+            Pattern p2 = Pattern.compile("(\\[%.*]|%.*)");
+            Matcher m2 = p2.matcher(event);
+
+            if (m2.find()) {
+                conversionString = m2.group(1);
+                conversionString = conversionString.replaceAll("\\[", "");
+                conversionString = conversionString.replaceAll("\\]", "");
+                event = conversionString;
+                key = conversionString;
+            }
+
+// TODO - Is this how we identify keys with standard regex??
+
+            if (event.matches("(%d|%date)")) {
+                hmap.put(key, event);
+            } else if (event.matches("%level")) {
+                hmap.put(key, event);
+            } else if (event.matches("%thread")) {
+                hmap.put(key, event);
+            }
+        }
+        return hmap;
     }
+
 }
