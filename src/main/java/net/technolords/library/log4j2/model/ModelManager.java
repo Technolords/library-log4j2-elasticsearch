@@ -37,21 +37,15 @@ public class ModelManager {
 
             if (m2.find()) {
                 conversionString = m2.group(1);
+                conversionString = conversionString.replaceAll("%n","");
                 conversionString = conversionString.replaceAll("\\[", "");
                 conversionString = conversionString.replaceAll("\\]", "");
                 event = conversionString;
+
+                conversionString = conversionString.replaceAll("%","");
                 key = conversionString;
             }
-
-// TODO - Is this how we identify keys with standard regex??
-
-            if (event.matches("(%d|%date)")) {
-                hmap.put(key, event);
-            } else if (event.matches("%level")) {
-                hmap.put(key, event);
-            } else if (event.matches("%thread")) {
-                hmap.put(key, event);
-            }
+            hmap.put(key,event);
         }
         return hmap;
     }

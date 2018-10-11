@@ -13,7 +13,7 @@ public class ModelManagerTest {
     public void testConversionPatternLayput() {
 
         ModelManager modelManager = new ModelManager();
-        Map<String, String> hmap =  modelManager.convertLayoutPatternToMap("%date{DEFAULT} [%level] [%thread] [%class{36}] %message%n");
+        Map<String, String> hmap =  modelManager.convertLayoutPatternToMap("%date{DEFAULT} [%level] [%thread] [%class{36}] [%thread] %message%n");
 
         Set keys = hmap.keySet();
         Iterator iterator = keys.iterator();
