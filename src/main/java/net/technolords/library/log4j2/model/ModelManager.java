@@ -1,19 +1,20 @@
 package net.technolords.library.log4j2.model;
 
+import org.apache.logging.log4j.core.LogEvent;
 import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.util.regex.Matcher;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ModelManager {
     private final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    static Map<String, String> keyMap = new HashMap<>();
+    static Map<String, String > logEventMap = new HashMap<>();
+
     /*
-        This class has the following responsobilies:
+        This class has the following responsibilities:
         - Pass the extracted pattern as input for some method to a Map with key/values
         - Normalize the values so it will not interfere with Json structure itself
 
@@ -30,36 +31,49 @@ public class ModelManager {
 
     public Map<String, String> convertLayoutPatternToMap(String layoutPattern) {
         String[] logEvents = layoutPattern.split("\\s+");
-        HashMap<String, String> hmap = new HashMap<>();
-        String eventName = null;
 
+        for (Map.Entry<String,String> entry : getKeyMap(logEvents).entrySet()) {
+            int i = 0;
 
-        for (String event : logEvents) {
-            String conversionString, key = null;
-            Pattern p1 = Pattern.compile("\\{\\w*\\}");
-            Matcher m1 = p1.matcher(event);
-            if (m1.find()) {
-                eventName = m1.group();
-            }
+            logEventMap.put(entry.getValue(), logEvents[i]);
 
-            event = event.replaceAll("\\{.*\\}", "");
-
-            Pattern p2 = Pattern.compile("(\\[%.*]|%.*)");
-            Matcher m2 = p2.matcher(event);
-
-            if (m2.find()) {
-                conversionString = m2.group(1);
-                conversionString = conversionString.replaceAll("%n","");
-                conversionString = conversionString.replaceAll("\\[", "");
-                conversionString = conversionString.replaceAll("\\]", "");
-                event = conversionString;
-
-                conversionString = conversionString.replaceAll("%","");
-                key = conversionString+eventName;
-            }
-            hmap.put(key,event);
+            i++;
         }
-        return hmap;
+
+        return logEventMap;
+    }
+//TODO : this method is to create a static map of logEvents
+    private Map<String, LogEvent> getEventMap(LogEvent[] logEvents) {
+        for (LogEvent event : logEvents) {
+        }
+
+
+        return null;
+    }
+
+// identification of keys from the layout pattern
+    private Map<String, String> getKeyMap(String[] logEvents) {
+        for (String event : logEvents) {
+            if (Pattern.matches("(%date|%d)(\\{.*})?",event)) {
+                keyMap.put(replaceBrackets(event),"date");
+            } else if (Pattern.matches("(%level)(\\{.*})?",event)) {
+                keyMap.put(replaceBrackets(event),"level");
+            } else if (Pattern.matches("%t|\\[%t]]",event)) {
+                keyMap.put(replaceBrackets(event),"thread");
+            } else if (Pattern.matches("\\[%c\\{.*}]|%c",event)) {
+                keyMap.put(replaceBrackets(event),"loggerCategoryName");
+            } else if (Pattern.matches("\\[%C\\{.*}]|%C",event)) {
+                keyMap.put(replaceBrackets(event),"fullyQualifiedClassName");
+            }
+        //TODO : Need to cover other patterns from logEvent
+        }
+        return keyMap;
+    }
+
+    private String replaceBrackets(String event) {
+        event = event.replaceAll("^\\[","");
+        event = event.replaceAll("]$","");
+        return event;
     }
 
 }
