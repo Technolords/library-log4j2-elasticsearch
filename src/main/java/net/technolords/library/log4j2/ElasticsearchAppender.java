@@ -5,6 +5,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.logging.log4j.core.config.Node;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -16,8 +18,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
-@Plugin(name = "Elasticsearch", category = "core", elementType = "appender", printObject = true)
+@Plugin(name = ElasticsearchAppender.ELASTIC_SEARCH, category = Node.CATEGORY, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class ElasticsearchAppender extends AbstractAppender {
+    public static final String ELASTIC_SEARCH = "Elasticsearch";
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Lock readLock = readWriteLock.readLock();
 
@@ -27,6 +30,9 @@ public class ElasticsearchAppender extends AbstractAppender {
         This class has the following responsibilities:
         - Implement the log4j2 Appender
         - Extract 'current' PatternLayout
+
+        Checkout:
+        - https://github.com/rfoltyns/log4j2-elasticsearch
     */
 
     protected ElasticsearchAppender(
@@ -45,7 +51,7 @@ public class ElasticsearchAppender extends AbstractAppender {
             // Convert to Json
             // Get client
             // Write Json
-            LOGGER.info("... done");
+            LOGGER.info("... done with layout: {}", getLayout().toString());
         } catch (Exception e) {
             if (!ignoreExceptions()) {
                 throw new AppenderLoggingException(e);

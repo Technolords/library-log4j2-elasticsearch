@@ -26,6 +26,14 @@ public class ModelManager {
         - how to identify the key (as name)
         - how to deal with duplicates
         - use the standard substitutions as well (see: https://logging.apache.org/log4j/2.x/manual/layouts.html)
+
+        %d{HH:mm:ss,SSS} ok %Xfdgd %Xfdgd %message -> filter -> %d{HH:mm:ss,SSS} %Xfdgd %message
+
+        {
+            "date" : "v1",
+            "loglevel" : "INFO",
+            "message" : "v3"
+        }
      */
 
     public Map<String, String> convertLayoutPatternToMap(String layoutPattern) {
