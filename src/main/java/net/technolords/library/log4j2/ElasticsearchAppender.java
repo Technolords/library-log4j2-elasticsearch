@@ -17,6 +17,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.util.ReadOnlyStringMap;
+
+import sun.util.logging.resources.logging;
 
 @Plugin(name = ElasticsearchAppender.ELASTIC_SEARCH, category = Node.CATEGORY, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class ElasticsearchAppender extends AbstractAppender {
@@ -42,12 +45,26 @@ public class ElasticsearchAppender extends AbstractAppender {
         super(name, filter, layout);
     }
 
+    // See also:
+    // https://github.com/apache/logging-log4j2/blob/master/log4j-csv/src/main/java/org/apache/logging/log4j/csv/layout/CsvLogEventLayout.java
+    // https://github.com/savantly-net/log4j2-extended-jsonlayout/blob/master/src/main/java/org/apache/logging/log4j/core/layout/ExtendedJsonLayout.java
     @Override
     public void append(LogEvent logEvent) {
         try {
             readLock.lock();
             final byte[] bytes = getLayout().toByteArray(logEvent);
-            // Get map
+            LOGGER.info("Level: {}", logEvent.getLevel());
+            LOGGER.info("Time (ms): {}", logEvent.getTimeMillis());
+            LOGGER.info("Thread id: {} -> name: {}", logEvent.getThreadId(), logEvent.getThreadName());
+            LOGGER.info("Message: {} -> parameters: {}", logEvent.getMessage(), logEvent.getMessage().getParameters().length);
+            LOGGER.info("Formatted message: {}", logEvent.getMessage().getFormattedMessage());
+            LOGGER.info("Marker: {}", logEvent.getMarker());
+            LOGGER.info("Class: {}", logEvent.getLoggerFqcn());
+            ReadOnlyStringMap readOnlyStringMap = logEvent.getContextData();
+            LOGGER.info("ContextData: {} -> size: {}", readOnlyStringMap, readOnlyStringMap.size());
+            LOGGER.info("ContextStack: {} -> size: {}", logEvent.getContextStack(), logEvent.getContextStack().asList().size());
+            LOGGER.info("StackTraceElement: {}", logEvent.getSource());
+            LOGGER.info("Thowable: {}", logEvent.getThrown());
             // Convert to Json
             // Get client
             // Write Json
