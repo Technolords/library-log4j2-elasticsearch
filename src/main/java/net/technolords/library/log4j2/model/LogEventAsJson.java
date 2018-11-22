@@ -1,13 +1,12 @@
 package net.technolords.library.log4j2.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.Map;
 import java.util.logging.Level;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"logLevel", "timeStamp", "threadId", "logMessage", "marker", "className", "threadContextMap", "threadContextStackTrace", "exception"})
 public class LogEventAsJson {
     // 'basics'
     // context-data aka mdc (key, value pairs)
@@ -28,125 +27,91 @@ public class LogEventAsJson {
     2018-11-05 20:26:32,802 main INFO Thowable: {}
      */
 
-    private Level logLevel;
-    private long timestamp;
-    private int threadId;
-    private String logMessage;
-    private String formattedMessage;
-    private String marker;
-    private String className;
-    private Map<String, String> threadContextMap;
-    private String threadContextStack;
-    private String threadContextStackTrace;
-    private String exception;
+    public Level logLevel;
+    public long timestamp;
+    public int threadId;
+    public String logMessage;
+    public String marker;
+    public String className;
+    public Map<String, String> threadContextMap;
+    public String threadContextStackTrace;
+    public String exception;
 
-    @JsonGetter("logLevel")
+    public LogEventAsJson(Level logLevel, long timestamp, String logMessage, String Marker, String className, String threadContextStackTrace, String exception) {
+    }
+
+    @JsonProperty
     public Level getLogLevel() {
         return logLevel;
     }
 
-    @JsonSetter("logLevel")
     public void setLogLevel(Level logLevel) {
         this.logLevel = logLevel;
     }
 
-    @JsonGetter("timestamp")
     public long getTimestamp() {
         return timestamp;
     }
 
-    @JsonSetter("timestamp")
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
-    @JsonGetter("threadId")
     public int getThreadId() {
         return threadId;
     }
 
-    @JsonSetter("threadId")
     public void setThreadId(int threadId) {
         this.threadId = threadId;
     }
 
-    @JsonGetter("logMessage")
     public String getLogMessage() {
         return logMessage;
     }
 
-    @JsonSetter("logMessage")
     public void setLogMessage(String logMessage) {
         this.logMessage = logMessage;
     }
 
-    @JsonGetter("formattedMessage")
-    public String getFormattedMessage() {
-        return formattedMessage;
-    }
-
-    @JsonSetter("formattedMessage")
-    public void setFormattedMessage(String formattedMessage) {
-        this.formattedMessage = formattedMessage;
-    }
-
-    @JsonGetter("marker")
     public String getMarker() {
         return marker;
     }
 
-    @JsonSetter("marker")
     public void setMarker(String marker) {
         this.marker = marker;
     }
 
-    @JsonGetter("className")
     public String getClassName() {
         return className;
     }
 
-    @JsonSetter("className")
     public void setClassName(String className) {
         this.className = className;
     }
 
-    @JsonGetter("threadContextMap")
-    public Map<String, String> getThreadContextMap() {
-        return threadContextMap;
-    }
-
-    @JsonSetter("threadContextMap")
-    public void setThreadContextMap(Map<String, String> threadContextMap) {
-        this.threadContextMap = threadContextMap;
-    }
-
-    @JsonGetter("threadContextStack")
-    public String getThreadContextStack() {
-        return threadContextStack;
-    }
-
-    @JsonSetter("threadContextStack")
-    public void setThreadContextStack(String threadContextStack) {
-        this.threadContextStack = threadContextStack;
-    }
-
-    @JsonGetter("threadContextStackTrace")
     public String getThreadContextStackTrace() {
         return threadContextStackTrace;
     }
 
-    @JsonSetter("threadContextStackTrace")
     public void setThreadContextStackTrace(String threadContextStackTrace) {
         this.threadContextStackTrace = threadContextStackTrace;
     }
 
-    @JsonGetter("exception")
     public String getException() {
         return exception;
     }
 
-    @JsonSetter("exception")
     public void setException(String exception) {
         this.exception = exception;
+    }
+
+    @JsonAnyGetter
+    public Map<String, String> getThreadContextMap() {
+        return threadContextMap;
+    }
+
+    @JsonAnySetter
+    public void setThreadContextMap(Map<String, String> threadContextMap) {
+        this.threadContextMap = threadContextMap;
     }
 }
