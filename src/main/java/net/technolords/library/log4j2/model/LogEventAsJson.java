@@ -25,30 +25,42 @@ public class LogEventAsJson {
     2018-11-05 20:26:32,802 main INFO ContextStack: [] -> size: 0
     2018-11-05 20:26:32,802 main INFO StackTraceElement: net.technolords.proto.log4j2.Sample.initAndRun(Sample.java:15)
     2018-11-05 20:26:32,802 main INFO Thowable: {}
+
+    2018-11-22 20:42:23,197 main INFO Level: ERROR
+    2018-11-22 20:42:23,198 main INFO Time (ms): 1542915743196
+    2018-11-22 20:42:23,198 main INFO Thread id: 1 -> name: main
+    2018-11-22 20:42:23,198 main INFO Message: Some error occurred: hah -> parameters: 2
+    2018-11-22 20:42:23,198 main INFO Formatted message: Some error occurred: hah
+    2018-11-22 20:42:23,198 main INFO Marker: ADMIN
+    2018-11-22 20:42:23,198 main INFO Class: org.apache.logging.slf4j.Log4jLogger
+    2018-11-22 20:42:23,199 main INFO ContextData: {my_key=my_value} -> size: 1
+    2018-11-22 20:42:23,199 main INFO ContextStack: [] -> size: 0
+    2018-11-22 20:42:23,199 main INFO StackTraceElement: net.technolords.proto.log4j2.Sample.initAndRun(Sample.java:17)
+    2018-11-22 20:42:23,199 main INFO Thowable: {} java.lang.IllegalArgumentException: hah
+        at net.technolords.proto.log4j2.Sample.initAndRun(Sample.java:16)
+        at net.technolords.proto.log4j2.Sample.main(Sample.java:24)
+
      */
 
-    public Level logLevel;
+    public String logLevel;
     public long timestamp;
-    public int threadId;
+    public String threadName;
     public String logMessage;
     public String marker;
     public String className;
     public Map<String, String> threadContextMap;
-    public String threadContextStackTrace;
     public String exception;
 
-    public LogEventAsJson(Level logLevel, long timestamp, String logMessage, String Marker, String className, String threadContextStackTrace, String exception) {
-    }
-
-    @JsonProperty
-    public Level getLogLevel() {
+    @JsonProperty(value = "logLevel")
+    public String getLogLevel() {
         return logLevel;
     }
 
-    public void setLogLevel(Level logLevel) {
+    public void setLogLevel(String logLevel) {
         this.logLevel = logLevel;
     }
 
+    @JsonProperty(value = "timestamp")
     public long getTimestamp() {
         return timestamp;
     }
@@ -57,14 +69,16 @@ public class LogEventAsJson {
         this.timestamp = timestamp;
     }
 
-    public int getThreadId() {
-        return threadId;
+    @JsonProperty(value = "threadName")
+    public String getThreadName() {
+        return threadName;
     }
 
-    public void setThreadId(int threadId) {
-        this.threadId = threadId;
+    public void setThreadName(String threadName) {
+        this.threadName = threadName;
     }
 
+    @JsonProperty(value = "logMessage")
     public String getLogMessage() {
         return logMessage;
     }
@@ -73,6 +87,7 @@ public class LogEventAsJson {
         this.logMessage = logMessage;
     }
 
+    @JsonProperty(value = "marker")
     public String getMarker() {
         return marker;
     }
@@ -81,6 +96,7 @@ public class LogEventAsJson {
         this.marker = marker;
     }
 
+    @JsonProperty(value = "stackTraceElement")
     public String getClassName() {
         return className;
     }
@@ -89,14 +105,7 @@ public class LogEventAsJson {
         this.className = className;
     }
 
-    public String getThreadContextStackTrace() {
-        return threadContextStackTrace;
-    }
-
-    public void setThreadContextStackTrace(String threadContextStackTrace) {
-        this.threadContextStackTrace = threadContextStackTrace;
-    }
-
+    @JsonProperty
     public String getException() {
         return exception;
     }
@@ -110,7 +119,6 @@ public class LogEventAsJson {
         return threadContextMap;
     }
 
-    @JsonAnySetter
     public void setThreadContextMap(Map<String, String> threadContextMap) {
         this.threadContextMap = threadContextMap;
     }

@@ -1,0 +1,12 @@
+{
+  "logLevel": "INFO",
+  "timestamp": 1541445992800,
+  "threadName": "main",
+  "logMessage": "This is fun with Sridevi",
+  "marker": "ALERT",
+  "stackTraceElement": "net.technolords.Sample",
+  "threadContextMap": {
+    "key1": "value1",
+    "key2": "value2"
+  }
+}

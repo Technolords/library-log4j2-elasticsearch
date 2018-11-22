@@ -82,6 +82,20 @@
             | Default scope
             +-->
         <dependency>
+            <!-- Used for Json-->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${version.jackson}</version>
+        </dependency>
+
+        <dependency>
+            <!-- Used for Json-->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${version.jackson}</version>
+        </dependency>
+
+        <dependency>
             <!-- Required to use logging -->
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -110,11 +124,6 @@
             <artifactId>testng</artifactId>
             <version>${version.testng}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${version.jackson}</version>
         </dependency>
     </dependencies>
 
