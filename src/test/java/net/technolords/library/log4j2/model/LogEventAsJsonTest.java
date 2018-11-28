@@ -22,6 +22,7 @@ public class LogEventAsJsonTest {
     public Object[][] dataSetConfigs() {
         return new Object[][]{
                 {"src/test/resources/data/json/json-without-exception.json"},
+                {"src/test/resources/data/json/json-with-exception.json"}
         };
     }
 
