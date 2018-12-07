@@ -5,25 +5,26 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.appender.AppenderLoggingException;
+import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
-import sun.util.logging.resources.logging;
+import net.technolords.library.log4j2.model.LogEventAsJson;
+import net.technolords.library.log4j2.model.ModelManager;
 
 @Plugin(name = ElasticsearchAppender.ELASTIC_SEARCH, category = Node.CATEGORY, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class ElasticsearchAppender extends AbstractAppender {
     public static final String ELASTIC_SEARCH = "Elasticsearch";
+    private ModelManager modelManager = new ModelManager();
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Lock readLock = readWriteLock.readLock();
 
@@ -53,22 +54,24 @@ public class ElasticsearchAppender extends AbstractAppender {
         try {
             readLock.lock();
             final byte[] bytes = getLayout().toByteArray(logEvent);
-            LOGGER.info("Level: {}", logEvent.getLevel());
-            LOGGER.info("Time (ms): {}", logEvent.getTimeMillis());
-            LOGGER.info("Thread id: {} -> name: {}", logEvent.getThreadId(), logEvent.getThreadName());
-            LOGGER.info("Message: {} -> parameters: {}", logEvent.getMessage(), logEvent.getMessage().getParameters().length);
-            LOGGER.info("Formatted message: {}", logEvent.getMessage().getFormattedMessage());
-            LOGGER.info("Marker: {}", logEvent.getMarker());
-            LOGGER.info("Class: {}", logEvent.getLoggerFqcn());
-            ReadOnlyStringMap readOnlyStringMap = logEvent.getContextData();
-            LOGGER.info("ContextData: {} -> size: {}", readOnlyStringMap, readOnlyStringMap.size());
-            LOGGER.info("ContextStack: {} -> size: {}", logEvent.getContextStack(), logEvent.getContextStack().asList().size());
-            LOGGER.info("StackTraceElement: {}", logEvent.getSource());
-            LOGGER.info("Thowable: {}", logEvent.getThrown());
+//            LOGGER.info("Level: {}", logEvent.getLevel());
+//            LOGGER.info("Time (ms): {}", logEvent.getTimeMillis());
+//            LOGGER.info("Thread id: {} -> name: {}", logEvent.getThreadId(), logEvent.getThreadName());
+//            LOGGER.info("Message: {} -> parameters: {}", logEvent.getMessage(), logEvent.getMessage().getParameters().length);
+//            LOGGER.info("Formatted message: {}", logEvent.getMessage().getFormattedMessage());
+//            LOGGER.info("Marker: {}", logEvent.getMarker());
+//            LOGGER.info("Class: {}", logEvent.getLoggerFqcn());
+//            ReadOnlyStringMap readOnlyStringMap = logEvent.getContextData();
+//            LOGGER.info("ContextData: {} -> size: {}", readOnlyStringMap, readOnlyStringMap.size());
+//            LOGGER.info("ContextStack: {} -> size: {}", logEvent.getContextStack(), logEvent.getContextStack().asList().size());
+//            LOGGER.info("StackTraceElement: {}", logEvent.getSource());
+//            LOGGER.info("Thowable: {}", logEvent.getThrown());
             // Convert to Json
+            LogEventAsJson logEventAsJson = this.modelManager.convertLogEvent(logEvent);
+            LOGGER.info("Got Json object: {}", logEventAsJson);
             // Get client
             // Write Json
-            LOGGER.info("... done with layout: {}", getLayout().toString());
+//            LOGGER.trace("... done with layout: {}", getLayout().toString());
         } catch (Exception e) {
             if (!ignoreExceptions()) {
                 throw new AppenderLoggingException(e);
