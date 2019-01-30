@@ -1,11 +1,17 @@
 package net.technolords.library.log4j2.model;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.logging.log4j.core.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.technolords.library.log4j2.util.RootCauseHelper;
+
 public class ModelManager {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    private String knownEnvironment;
 
     /**
      * Convert the generated LogEvent data into a presentable Json format so it can be stored.
@@ -22,20 +28,34 @@ public class ModelManager {
         logEventAsJson.setTimestamp(logEvent.getTimeMillis());
         logEventAsJson.setThreadName(logEvent.getThreadName());
         logEventAsJson.setLogMessage(logEvent.getMessage() == null ? "" : logEvent.getMessage().getFormattedMessage());
+        logEventAsJson.setEnvironment(this.getEnvironment());
         logEventAsJson.setMarker(logEvent.getMarker() == null ? "" : logEvent.getMarker().getName());
         logEventAsJson.setClassName(logEvent.getSource().getClassName());
         logEventAsJson.setThreadContextMap(logEvent.getContextData().toMap());
-        logEventAsJson.setException(this.getRootCause(logEvent.getThrown()).getMessage());
+        logEventAsJson.setException(RootCauseHelper.getRootCause(logEvent.getThrown()).getMessage());
         return logEventAsJson;
     }
 
-    protected Throwable getRootCause(Throwable cause) {
-        LOGGER.debug("Got cause: {} -> with root cause: {}", cause.getMessage(), (cause.getCause() == null ? "null": cause.getCause().getMessage()));
-        if (cause.getCause() != null) {
-            return this.getRootCause(cause.getCause());
-        } else {
-            return cause;
+    protected String getEnvironment() {
+        if (this.knownEnvironment != null) {
+            return this.knownEnvironment;
+        }
+        // Derive from environment variable
+        String environmentAsVariable = System.getenv("environment");
+        if (environmentAsVariable != null && !environmentAsVariable.isEmpty()) {
+            this.knownEnvironment = environmentAsVariable;
+            return this.knownEnvironment;
+        }
+        try {
+            // Derive from calculation (i.e. from local machine)
+            this.knownEnvironment = InetAddress.getLocalHost().getCanonicalHostName();
+            return this.knownEnvironment;
+        } catch (UnknownHostException e) {
+            this.knownEnvironment = "localhost";
+            return this.knownEnvironment;
         }
     }
+
+
 
 }

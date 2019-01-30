@@ -29,6 +29,7 @@
         <!--+
             | Version properties
             +-->
+        <version.elasticsearch>6.4.2</version.elasticsearch>
         <version.log4j2>2.7</version.log4j2>
         <version.maven.plugin.build.helper>1.12</version.maven.plugin.build.helper>
         <version.maven.plugin.compiler>3.3</version.maven.plugin.compiler>
@@ -81,6 +82,13 @@
         <!--+
             | Default scope
             +-->
+        <dependency>
+            <!-- Required to interface with a remote Elasticsearch cluster -->
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>${version.elasticsearch}</version>
+        </dependency>
+
         <dependency>
             <!-- Used for Json-->
             <groupId>com.fasterxml.jackson.core</groupId>

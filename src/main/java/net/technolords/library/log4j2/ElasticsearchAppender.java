@@ -18,15 +18,19 @@ import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
+import net.technolords.library.log4j2.elasticsearch.ElasticsearchClient;
 import net.technolords.library.log4j2.model.LogEventAsJson;
 import net.technolords.library.log4j2.model.ModelManager;
 
 @Plugin(name = ElasticsearchAppender.ELASTIC_SEARCH, category = Node.CATEGORY, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class ElasticsearchAppender extends AbstractAppender {
     public static final String ELASTIC_SEARCH = "Elasticsearch";
-    private ModelManager modelManager = new ModelManager();
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private Lock readLock = readWriteLock.readLock();
+    private ModelManager modelManager = new ModelManager();
+    private ElasticsearchClient elasticsearchClient;
+
+    // TODO: investigate LifeCycle -> stopping -> close connection to es
 
     /*
         -Dlog4j.configurationFile=path/to/log4j2.xml
@@ -39,11 +43,16 @@ public class ElasticsearchAppender extends AbstractAppender {
         - https://github.com/rfoltyns/log4j2-elasticsearch
     */
 
+    /*
+        <Elasticsearch name="es" index="proto" host="localhost" port="9200">
+     */
+
     protected ElasticsearchAppender(
             String name, Filter filter, Layout<? extends Serializable> layout,
             String index, String host, int port
     ) {
         super(name, filter, layout);
+        this.elasticsearchClient = new ElasticsearchClient(host, port);
     }
 
     // See also:
@@ -53,25 +62,11 @@ public class ElasticsearchAppender extends AbstractAppender {
     public void append(LogEvent logEvent) {
         try {
             readLock.lock();
-            final byte[] bytes = getLayout().toByteArray(logEvent);
-//            LOGGER.info("Level: {}", logEvent.getLevel());
-//            LOGGER.info("Time (ms): {}", logEvent.getTimeMillis());
-//            LOGGER.info("Thread id: {} -> name: {}", logEvent.getThreadId(), logEvent.getThreadName());
-//            LOGGER.info("Message: {} -> parameters: {}", logEvent.getMessage(), logEvent.getMessage().getParameters().length);
-//            LOGGER.info("Formatted message: {}", logEvent.getMessage().getFormattedMessage());
-//            LOGGER.info("Marker: {}", logEvent.getMarker());
-//            LOGGER.info("Class: {}", logEvent.getLoggerFqcn());
-//            ReadOnlyStringMap readOnlyStringMap = logEvent.getContextData();
-//            LOGGER.info("ContextData: {} -> size: {}", readOnlyStringMap, readOnlyStringMap.size());
-//            LOGGER.info("ContextStack: {} -> size: {}", logEvent.getContextStack(), logEvent.getContextStack().asList().size());
-//            LOGGER.info("StackTraceElement: {}", logEvent.getSource());
-//            LOGGER.info("Thowable: {}", logEvent.getThrown());
             // Convert to Json
             LogEventAsJson logEventAsJson = this.modelManager.convertLogEvent(logEvent);
             LOGGER.info("Got Json object: {}", logEventAsJson);
             // Get client
-            // Write Json
-//            LOGGER.trace("... done with layout: {}", getLayout().toString());
+            this.elasticsearchClient.createIndex(logEventAsJson);
         } catch (Exception e) {
             if (!ignoreExceptions()) {
                 throw new AppenderLoggingException(e);
@@ -85,13 +80,20 @@ public class ElasticsearchAppender extends AbstractAppender {
      * <Elasticsearch name="es" index="proto" host="localhost" port="9200">
      *
      * @param name
+     *  The name associated with the Appender, used to identify the Appender within the log4j2.xml context
      * @param layout
+     *  The Layout associated with the Appender
      * @param filter
+     *  The Filter associated with the Appender
      * @param index
+     *  The index associated with Elasticsearch, defaults to 'events'
      * @param host
+     *  The host associated with the Elasticsearch server
      * @param port
+     *  The posrt associated with the Elasticsearch server
      *
      * @return
+     *  An instance of the ElasticsearchAppender
      */
     @PluginFactory
     public static ElasticsearchAppender createAppender(
@@ -116,7 +118,7 @@ public class ElasticsearchAppender extends AbstractAppender {
         }
         // Defaults
         if (index == null || index.isEmpty()) {
-            index = "TODO"; // TODO: fetch constant from client
+            index = ElasticsearchClient.TEMPLATE_LOG_EVENTS;
             LOGGER.info("Index defaulted to: {}", index);
         }
         if (layout == null) {

@@ -4,6 +4,7 @@
   "threadName": "main",
   "logMessage": "This is fun with Sridevi",
   "marker": "ALERT",
+  "environment": "some.host.net",
   "stackTraceElement": "net.technolords.Sample",
   "threadContextMap": {
     "key1": "value1",

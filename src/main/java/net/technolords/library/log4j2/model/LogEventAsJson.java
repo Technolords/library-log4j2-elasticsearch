@@ -6,7 +6,18 @@ import java.util.Map;
 import java.util.logging.Level;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"logLevel", "timeStamp", "threadId", "logMessage", "marker", "className", "threadContextMap", "threadContextStackTrace", "exception"})
+@JsonPropertyOrder({
+        "logLevel",
+        "timeStamp",
+        "threadId",
+        "logMessage",
+        "marker",
+        "environment",
+        "className",
+        "threadContextMap",
+        "threadContextStackTrace",
+        "exception"
+})
 public class LogEventAsJson {
     // 'basics'
     // context-data aka mdc (key, value pairs)
@@ -42,14 +53,15 @@ public class LogEventAsJson {
 
      */
 
-    public String logLevel;
-    public long timestamp;
-    public String threadName;
-    public String logMessage;
-    public String marker;
-    public String className;
-    public Map<String, String> threadContextMap;
-    public String exception;
+    private String logLevel;
+    private long timestamp;
+    private String threadName;
+    private String logMessage;
+    private String marker;
+    private String environment;
+    private String className;
+    private Map<String, String> threadContextMap;
+    private String exception;
 
     @JsonProperty(value = "logLevel")
     public String getLogLevel() {
@@ -94,6 +106,15 @@ public class LogEventAsJson {
 
     public void setMarker(String marker) {
         this.marker = marker;
+    }
+
+    @JsonProperty(value = "environment")
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
     }
 
     @JsonProperty(value = "stackTraceElement")

@@ -1,0 +1,29 @@
+{
+  "template" : "log_*",
+  "order": 1,
+  "settings" : {
+    "number_of_shards" : 5
+  },
+  "mappings" : {
+    "_default_" : {
+      "_all" : {
+        "enabled" : "false"
+      }
+    },
+    "events" : {
+      "properties": {
+        "timeStamp" : {
+          "type" : "date",
+          "format" : "epoch_millis||yyy-MM-dd HH:mm:ss"
+        },
+        "environment" : {
+          "type" : "text",
+          "index" : "false"
+        }
+      }
+    }
+  },
+  "aliases" : {
+    "log_current": {}
+  }
+}
