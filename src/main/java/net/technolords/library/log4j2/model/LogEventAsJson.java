@@ -62,6 +62,7 @@ public class LogEventAsJson {
     private String className;
     private Map<String, String> threadContextMap;
     private String exception;
+    private String esType;
 
     @JsonProperty(value = "logLevel")
     public String getLogLevel() {
@@ -142,5 +143,14 @@ public class LogEventAsJson {
 
     public void setThreadContextMap(Map<String, String> threadContextMap) {
         this.threadContextMap = threadContextMap;
+    }
+
+    @JsonIgnore
+    public String getEsType() {
+        return esType;
+    }
+
+    public void setEsType(String esType) {
+        this.esType = esType;
     }
 }

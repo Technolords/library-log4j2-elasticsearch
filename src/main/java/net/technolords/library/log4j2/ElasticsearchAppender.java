@@ -19,6 +19,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import net.technolords.library.log4j2.elasticsearch.ElasticsearchClient;
+import net.technolords.library.log4j2.elasticsearch.factory.TemplateFactory;
 import net.technolords.library.log4j2.model.LogEventAsJson;
 import net.technolords.library.log4j2.model.ModelManager;
 
@@ -29,6 +30,7 @@ public class ElasticsearchAppender extends AbstractAppender {
     private Lock readLock = readWriteLock.readLock();
     private ModelManager modelManager = new ModelManager();
     private ElasticsearchClient elasticsearchClient;
+    private static String esIndex;
 
     // TODO: investigate LifeCycle -> stopping -> close connection to es
 
@@ -64,7 +66,8 @@ public class ElasticsearchAppender extends AbstractAppender {
             readLock.lock();
             // Convert to Json
             LogEventAsJson logEventAsJson = this.modelManager.convertLogEvent(logEvent);
-            LOGGER.info("Got Json object: {}", logEventAsJson);
+            logEventAsJson.setEsType(esIndex);
+            LOGGER.info("Got Json object: {} -> with index: {}", logEventAsJson, logEventAsJson.getEsType());
             // Get client
             this.elasticsearchClient.createIndex(logEventAsJson);
         } catch (Exception e) {
@@ -118,9 +121,10 @@ public class ElasticsearchAppender extends AbstractAppender {
         }
         // Defaults
         if (index == null || index.isEmpty()) {
-            index = ElasticsearchClient.TEMPLATE_LOG_EVENTS;
+            index = TemplateFactory.TEMPLATE_LOG_EVENTS;
             LOGGER.info("Index defaulted to: {}", index);
         }
+        esIndex = index;
         if (layout == null) {
             layout = PatternLayout.createDefaultLayout();
             LOGGER.info("Pattern layout defaulted to: {}", layout.toString());
